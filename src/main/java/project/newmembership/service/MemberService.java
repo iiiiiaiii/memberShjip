@@ -2,6 +2,10 @@ package project.newmembership.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +14,7 @@ import project.newmembership.dto.MemberDto;
 import project.newmembership.entity.Member;
 import project.newmembership.repository.MemberRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +50,14 @@ public class MemberService {
     }
 
     public Member login(String username, String password) {
-        return memberRepository.findByUsername(username)
-                .filter(m -> m.getPassword().equals(password))
+        Member member = memberRepository.findByUsername(username)
                 .orElse(null);
+
+        if (member != null && passwordEncoder.matches(password, member.getPassword())) {
+            return member;
+        } else {
+            return null;
+        }
     }
     public List<MemberDto> findAllDto(Pageable pageable) {
         return memberRepository.findAllDto(pageable);
@@ -60,4 +70,5 @@ public class MemberService {
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
+
 }

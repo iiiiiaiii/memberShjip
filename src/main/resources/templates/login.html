@@ -13,23 +13,16 @@
     <div class="py-5 text-center">
         <h2>로그인</h2>
     </div>
-    <form action="/api/user/loginTry" th:action th:object="${loginForm}" method="post">
-        <div th:if="${#fields.hasGlobalErrors()}">
-            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-               th:text="${err}">전체 오류 메시지</p>
-        </div>
+    <form role="form" action="/api/user/loginTry" th:object="${loginForm}" method="post">
         <div>
             <label for="username">로그인 ID</label>
-            <input type="text" id="username" th:field="*{username}" class="formcontrol"
+            <input type="text" id="username" th:field="*{username}" class="form-control"
                    th:errorclass="field-error">
-            <div class="field-error" th:errors="*{username}" />
         </div>
         <div>
             <label for="password">비밀번호</label>
-            <input type="password" id="password" th:field="*{password}"
-                   class="form-control"
+            <input type="password" id="password" th:field="*{password}" class="form-control"
                    th:errorclass="field-error">
-            <div class="field-error" th:errors="*{password}" />
         </div>
         <hr class="my-4">
         <div class="row">

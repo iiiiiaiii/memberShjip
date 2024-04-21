@@ -11,7 +11,7 @@ import project.newmembership.controller.form.MemberForm;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Member extends BaseEntity {
+public class Member extends BaseEntity  {
     @Id
     @GeneratedValue
     private Long id;
@@ -22,6 +22,7 @@ public class Member extends BaseEntity {
     private String name;
     private String tell;
     private String email;
+    private String role;
 
     public Member(String username, String password, String nickname, String name, String tell, String email) {
         this.username = username;
@@ -30,6 +31,7 @@ public class Member extends BaseEntity {
         this.name = name;
         this.tell = tell;
         this.email = email;
+        this.role = "ROLE_USER";
     }
 
     public Member updateMember(MemberForm memberForm) {
