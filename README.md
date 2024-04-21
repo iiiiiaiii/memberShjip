@@ -26,6 +26,6 @@ Repository구성
     Optional<Member> findByUsername(String username);
 
 
-WebConfig를 통한 사용자관리
+WebConfig와 인터셉터를 통한 사용자관리
 SecurityConfig를 통한 비밀번호 암호화 관리
     
