@@ -52,7 +52,6 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Id already exists");
         }
         memberService.save(form);
-        System.out.println("dkaosdko = ");
         return ResponseEntity.status(HttpStatus.CREATED).body("Member created successfully");
     }
 
@@ -62,14 +61,13 @@ public class MemberController {
     }
 
     @PostMapping("/api/user/loginTry")
-    public String loginTry(@Valid LoginForm loginForm, BindingResult result,
+    public String loginTry(@Valid @ModelAttribute LoginForm loginForm, BindingResult result,
                            HttpServletRequest request) {
         Member findMember = memberService.login(loginForm.getUsername(), loginForm.getPassword());
         if (findMember == null) {
             result.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return "login";
         }
-        System.out.println("findMember = " + findMember);
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, findMember);
         session.setAttribute("username",findMember.getUsername());
@@ -96,9 +94,28 @@ public class MemberController {
     @PostMapping("/api/user/{username}")
     public String updateMember2(@PathVariable("username") String username,
                                 @Valid @ModelAttribute MemberForm form,
+                                BindingResult result,
                                 HttpSession session) {
         Optional<Member> byUsername = memberService.findByUsername(username);
         Member member = byUsername.orElse(null);
+        if (member == null) {
+            return "redirect:/";
+        }
+        Optional<Member> duplicateName = memberService.findByUsername(form.getUsername());
+        if(!username.equals(form.getUsername()) &&duplicateName.isPresent()){
+            result.reject("duplicateError", "이미 존재하는 id입니다");
+            return "update";
+        }
+        if (form.getUsername().isEmpty()||form.getName().isEmpty() ||form.getPassword().isEmpty()||form.getNickname().isEmpty()) {
+            result.reject("null","id,이름,패스워드,닉네임은 필수입니다");
+            return "update";
+        }
+        if (form.getUsername().length() < 4||form.getPassword().length()<4) {
+            result.reject("lengthError","아이디,비밀번호는 4글자 이상입니다");
+            return "update";
+
+        }
+
         memberService.update(member,form);
         session.invalidate();
         return "redirect:/";
@@ -117,7 +134,6 @@ public class MemberController {
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("request = " + request);
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
